@@ -1,8 +1,8 @@
-import { FrameData, SpriteData } from "./SpriteManager";
+import { AnimationData, Frame, SpriteData } from "./SpriteManager";
 
 export class Sprite {
-  private states: Map<string, FrameData> = new Map();
-  private currentState: FrameData;
+  private states: Map<string, AnimationData> = new Map();
+  private currentState: AnimationData;
   private currentFrame: number = 0;
 
   public image: HTMLImageElement;
@@ -14,6 +14,7 @@ export class Sprite {
     this.currentState = this.states.get(this.defaultState)!;
     this.currentFrame = this.currentState.from;
     this.image = this.data.image;
+
   }
 
   public update() {
@@ -24,14 +25,8 @@ export class Sprite {
     }
   }
 
-  public getCurrentFramePosition() {
-    const frameWidth = 32 || this.data.metadata.size.w;
-    const frameHeight = 32 || this.data.metadata.size.h;
-
-    return {
-      framePosition: [this.currentFrame * frameWidth, 0],
-      frameDimensions: [frameWidth, frameHeight]
-    }
+  public getCurrentFrameData(): Frame {
+    return this.data.frames[this.currentFrame];
   }
 
   public setState(state: string) {

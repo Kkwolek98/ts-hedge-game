@@ -1,6 +1,6 @@
 import { GameObject } from "../../core/GameObject";
 import { Sprite } from "../../core/Sprite";
-import { FrameData, SpriteManager } from "../../core/SpriteManager";
+import { AnimationData, SpriteManager } from "../../core/SpriteManager";
 
 const SPRITE_NAME = 'hedgehog-sprite'
 
@@ -28,9 +28,9 @@ export class Player extends GameObject {
   }
 
   protected override draw() {
-    const frame = this.sprite.getCurrentFramePosition();
+    const { frame } = this.sprite.getCurrentFrameData();
 
-    this.game.ctx.drawImage(this.sprite.image, frame.framePosition[0], frame.framePosition[1], frame.frameDimensions[0], frame.frameDimensions[1], this.position[0], this.position[1], frame.frameDimensions[0] * 3, frame.frameDimensions[1] * 3)
+    this.game.ctx.drawImage(this.sprite.image, frame.x, frame.y, frame.w, frame.h, this.position[0], this.position[1], frame.w, frame.h)
   }
 
 
