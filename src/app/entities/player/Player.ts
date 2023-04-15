@@ -15,10 +15,6 @@ export class Player extends GameObject {
     const spriteData = SpriteManager.sprites.get(SPRITE_NAME)!;
 
     this.sprite = new Sprite(spriteData, 'run');
-
-    window.addEventListener('keypress', () => {
-      this.position[0] += 5
-    })
   }
 
   public override update() {

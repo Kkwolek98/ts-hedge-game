@@ -12,6 +12,8 @@ export class Game {
     return this._instance;
   }
 
+  public deltaTime: number = 0;
+
   public canvas!: HTMLCanvasElement;
   public ctx!: CanvasRenderingContext2D;
   public player!: Player;

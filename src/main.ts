@@ -8,8 +8,14 @@ game.start().then(() => {
   gameLoop();
 });
 
-function gameLoop() {
+let lastFrameTime = 0;
+
+function gameLoop(ts: number = 0) {
   game.ctx.clearRect(0, 0, canvas.width, canvas.height);
+  game.deltaTime = ts - lastFrameTime;
   game.update();
+
+  lastFrameTime = ts;
+
   requestAnimationFrame(gameLoop);
 }
