@@ -50,3 +50,7 @@ export class Sprite {
 
   }
 }
+
+export interface SpriteSize {
+  getSpriteSize(): { w: number, h: number }
+}

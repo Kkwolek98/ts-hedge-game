@@ -1,4 +1,5 @@
 import { Player } from "../entities/player/Player";
+import { KeyboardInput } from "./KeyboardInput";
 import { SpriteManager } from "./SpriteManager";
 
 export class Game {
@@ -19,6 +20,7 @@ export class Game {
   public player!: Player;
 
   constructor() {
+    KeyboardInput.listen();
   }
 
   public async start(): Promise<void> {
