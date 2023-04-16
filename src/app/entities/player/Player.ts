@@ -44,15 +44,16 @@ export class Player extends PhysicsObject {
 
   private handleInput(): void {
     if (KeyboardInput.isHeld('KeyD')) {
-      this.velocityX += .5;
+      if (this.velocityX < this.maxVelocityX) this.velocityX += .5;
     } else if (KeyboardInput.isHeld('KeyA')) {
-      this.velocityX -= .5;
+      if (this.velocityX > -this.maxVelocityX) this.velocityX -= .5;
     } else {
-      this.velocityX += -(this.velocityX / 16)
+      this.velocityX += -(this.velocityX / 10)
     }
 
-    if (KeyboardInput.isHeld('space')) {
+    if (KeyboardInput.isHeld('space') && !this.jumpsPerformed) {
       this.velocityY = -20;
+      this.jumpsPerformed++;
     }
 
 
