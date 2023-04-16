@@ -12,14 +12,16 @@ export class PhysicsObject extends GameObject implements Velocity {
   private readonly GRAVITY_ACCELERATION: number = .69;
   private spriteSize: { w: number, h: number };
 
-  constructor(sprite: Sprite) {
+  constructor(sprite: Sprite, private gravityAffected: boolean = true) {
     super();
 
     this.spriteSize = sprite.getCurrentFrameData().sourceSize;
   }
 
   protected handlePhysics(): void {
-    if (this.position[1] + this.velocityY + this.spriteSize.h < this.game.canvas.height) {
+    if (!this.gravityAffected) return;
+
+    if (this.position[1] + this.velocityY + this.spriteSize.h < this.game.canvas.height - this.game.ground.height) {
       this.velocityY += this.GRAVITY_ACCELERATION;
     } else {
       this.jumpsPerformed = 0;

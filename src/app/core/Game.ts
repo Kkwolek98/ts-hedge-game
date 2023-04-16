@@ -1,4 +1,5 @@
 import { Player } from "../entities/player/Player";
+import { Ground } from "../terrain/Ground";
 import { KeyboardInput } from "./KeyboardInput";
 import { SpriteManager } from "./SpriteManager";
 
@@ -14,10 +15,10 @@ export class Game {
   }
 
   public deltaTime: number = 0;
-
   public canvas!: HTMLCanvasElement;
   public ctx!: CanvasRenderingContext2D;
   public player!: Player;
+  public ground!: Ground;
 
   constructor() {
     KeyboardInput.listen();
@@ -31,10 +32,12 @@ export class Game {
 
     await this.loadSprites();
 
+    this.ground = new Ground();
     this.player = new Player();
   }
 
   public update(): void {
+    this.ground.update();
     this.player.update();
 
     this.draw();
@@ -44,8 +47,9 @@ export class Game {
 
   }
 
-  private async loadSprites(): Promise<void> {
-    return await SpriteManager.load('hedgehog-sprite');
+  private async loadSprites(): Promise<void[]> {
+    const sprites = ['hedgehog-sprite', 'ground-sprite'];
+    return await Promise.all(sprites.map((sprite) => SpriteManager.load(sprite)));
   }
 
 }

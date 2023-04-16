@@ -46,6 +46,10 @@ export class Sprite {
     return this.data.frames[this.currentFrame];
   }
 
+  public getRandomFrameData(): Frame {
+    return this.data.frames[Math.floor(Math.random() * this.data.frames.length)];
+  }
+
   public setState(state: string) {
 
   }
