@@ -1,5 +1,6 @@
 import { KeyboardInput } from "../../core/KeyboardInput";
 import { PhysicsObject } from "../../core/Physics";
+import { SCROLL_POSITION } from "../../core/settings";
 import { Sprite } from "../../core/Sprite";
 import { SpriteManager } from "../../core/SpriteManager";
 
@@ -44,9 +45,17 @@ export class Player extends PhysicsObject {
 
   private handleInput(): void {
     if (KeyboardInput.isHeld('KeyD')) {
-      if (this.velocityX < this.maxVelocityX) this.velocityX += .5;
+      if (this.position[0] > SCROLL_POSITION * this.game.canvas.width) {
+        this.velocityX = 0;
+      } else {
+        if (this.velocityX < this.maxVelocityX) this.velocityX += .5;
+      }
     } else if (KeyboardInput.isHeld('KeyA')) {
-      if (this.velocityX > -this.maxVelocityX) this.velocityX -= .5;
+      if (this.position[0] < 0) {
+        this.velocityX = 0;
+      } else {
+        if (this.velocityX > -this.maxVelocityX) this.velocityX -= .5;
+      }
     } else {
       this.velocityX += -(this.velocityX / 10)
     }

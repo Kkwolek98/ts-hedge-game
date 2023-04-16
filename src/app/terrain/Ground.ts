@@ -1,4 +1,6 @@
 import { GameObject } from "../core/GameObject";
+import { KeyboardInput } from "../core/KeyboardInput";
+import { SCROLL_POSITION } from "../core/settings";
 import { SpriteManager } from "../core/SpriteManager";
 import { GroundTile } from "./GroundTile";
 
@@ -16,15 +18,21 @@ export class Ground extends GameObject {
   }
 
   public update(): void {
-    this.distanceSinceLastGeneration += 10;
 
     if (this.distanceSinceLastGeneration >= this.offscreenTiles * this.tileSize.w) {
       this.generateNewTiles();
       this.distanceSinceLastGeneration = 0;
     }
 
+
+    if (this.game.player.position[0] > SCROLL_POSITION * this.game.canvas.width && KeyboardInput.isHeld('KeyD')) {
+      this.distanceSinceLastGeneration += this.game.player.maxVelocityX;
+      this.groundTiles.forEach((tile) => {
+        tile.position[0] -= this.game.player.maxVelocityX;
+      });
+    }
+
     this.groundTiles.forEach((tile) => {
-      tile.position[0] -= 10;
       tile.update();
     });
   }
