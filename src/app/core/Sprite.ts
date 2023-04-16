@@ -15,7 +15,7 @@ export class Sprite {
   constructor(
     private data: SpriteData,
     private readonly defaultState: string = 'idle',
-    animationFps: number = 16
+    animationFps: number = 8
   ) {
     this.data.metadata.frameTags.forEach((tag) => {
       this.states.set(tag.name, tag);

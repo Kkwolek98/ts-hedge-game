@@ -10,7 +10,7 @@ export class Player extends PhysicsObject {
 
   constructor() {
     const spriteData = SpriteManager.sprites.get(SPRITE_NAME)!;
-    const sprite = new Sprite(spriteData, 'run');
+    const sprite = new Sprite(spriteData);
     super(sprite);
 
     this.sprite = sprite;
@@ -38,7 +38,7 @@ export class Player extends PhysicsObject {
       this.game.ctx.drawImage(this.sprite.image, frame.x, frame.y, frame.w, frame.h, this.game.canvas.width - frame.w - this.position[0], this.position[1], frame.w, frame.h);
       this.game.ctx.restore();
     } else {
-      this.game.ctx.drawImage(this.sprite.image, frame.x, frame.y, frame.w, frame.h, this.position[0], this.position[1], frame.w, frame.h);
+      this.game.ctx.drawImage(this.sprite.image, frame.x + 1, frame.y, frame.w - 1, frame.h, this.position[0], this.position[1], frame.w, frame.h);
     }
   }
 
