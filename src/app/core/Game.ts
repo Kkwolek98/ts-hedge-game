@@ -37,6 +37,7 @@ export class Game {
   }
 
   public update(): void {
+    this.drawBackground();
     this.ground.update();
     this.player.update();
 
@@ -45,6 +46,23 @@ export class Game {
 
   private draw(): void {
 
+  }
+
+  private drawBackground(): void {
+    const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+
+    gradient.addColorStop(0, '#35D6ED');
+    gradient.addColorStop(0.1, '#35D6ED');
+    gradient.addColorStop(0.2, '#65DDEF');
+    gradient.addColorStop(0.3, '#65DDEF');
+    gradient.addColorStop(0.4, '#7AE5F5');
+    gradient.addColorStop(0.5, '#7AE5F5');
+    gradient.addColorStop(0.6, '#97EBF4');
+    gradient.addColorStop(0.9, '#97EBF4');
+    gradient.addColorStop(1, '#C9F6FF');
+
+    this.ctx.fillStyle = gradient;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   private async loadSprites(): Promise<void[]> {
