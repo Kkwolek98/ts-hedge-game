@@ -12,6 +12,7 @@ export class Sprite {
   private timePassed: number = 0;
 
   public image: HTMLImageElement;
+  public dimensions: { w: number, h: number };
   constructor(
     private data: SpriteData,
     private readonly defaultState: string = 'idle',
@@ -24,6 +25,7 @@ export class Sprite {
     this.currentState = this.states.get(this.defaultState)!;
     this.currentFrame = this.currentState.from;
     this.image = this.data.image;
+    this.dimensions = this.getCurrentFrameData().sourceSize;
 
     this.animationFrameTime = 1000 / animationFps;
   }

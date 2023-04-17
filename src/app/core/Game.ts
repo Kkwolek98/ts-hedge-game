@@ -15,13 +15,13 @@ export class Game {
     return this._instance;
   }
 
-  private obstacles: Obstacle[] = [];
 
   public deltaTime: number = 0;
   public canvas!: HTMLCanvasElement;
   public ctx!: CanvasRenderingContext2D;
   public player!: Player;
   public ground!: Ground;
+  public obstacles: Obstacle[] = [];
 
   constructor() {
     KeyboardInput.listen();
