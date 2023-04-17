@@ -8,6 +8,7 @@ const SPRITE_NAME = 'hedgehog-sprite'
 
 export class Player extends PhysicsObject {
   private sprite: Sprite;
+  private flipped: boolean = false;
 
   constructor() {
     const spriteData = SpriteManager.sprites.get(SPRITE_NAME)!;
@@ -22,7 +23,7 @@ export class Player extends PhysicsObject {
     this.handlePhysics();
     this.handleInput();
 
-    if (this.position[0] < SCROLL_POSITION * this.game.canvas.width) {
+    if (this.position[0] <= SCROLL_POSITION * this.game.canvas.width || this.velocityX <= 0) {
       this.position[0] += this.velocityX;
     }
     this.position[1] += this.velocityY;
@@ -33,7 +34,7 @@ export class Player extends PhysicsObject {
   protected override draw() {
     const { frame } = this.sprite.getCurrentFrameData();
 
-    if (this.velocityX < 0) {
+    if (this.flipped) {
       // draw flipped sprite
       this.game.ctx.save();
       this.game.ctx.translate(this.game.canvas.width, 0);
@@ -47,26 +48,42 @@ export class Player extends PhysicsObject {
 
   private handleInput(): void {
     if (KeyboardInput.isHeld('KeyD')) {
-      if (this.velocityX < this.maxVelocityX) this.velocityX += .5;
+      this.handleRightMovement();
     } else if (KeyboardInput.isHeld('KeyA')) {
-      if (this.position[0] < 0) {
-        this.velocityX = 0;
-      } else {
-        if (this.velocityX > -this.maxVelocityX) this.velocityX -= .5;
-      }
+      this.handleLeftMovement();
     } else {
-      this.velocityX += -(this.velocityX / 10)
-      if (Math.abs(this.velocityX) < 0.25) {
-        this.velocityX = 0;
-      }
+      this.handleStop();
     }
 
     if (KeyboardInput.isHeld('space') && !this.jumpsPerformed) {
       this.velocityY = -15;
       this.jumpsPerformed++;
     }
+  }
 
+  private handleLeftMovement(): void {
+    this.flipped = true;
 
+    if (this.position[0] < 0) {
+      this.velocityX = 0;
+    } else {
+      if (this.velocityX > -this.maxVelocityX) this.velocityX -= .5;
+    }
+  }
+
+  private handleRightMovement(): void {
+    this.flipped = false;
+    if (this.velocityX < this.maxVelocityX) this.velocityX += .5;
+  }
+
+  private handleStop(): void {
+    this.velocityX += -(this.velocityX / 10)
+    if (
+      Math.abs(this.velocityX) > 0 &&
+      Math.abs(this.velocityX) < 0.25
+    ) {
+      this.velocityX = 0;
+    }
   }
 
 
