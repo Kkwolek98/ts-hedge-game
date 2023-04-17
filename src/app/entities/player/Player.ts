@@ -22,7 +22,9 @@ export class Player extends PhysicsObject {
     this.handlePhysics();
     this.handleInput();
 
-    this.position[0] += this.velocityX;
+    if (this.position[0] < SCROLL_POSITION * this.game.canvas.width) {
+      this.position[0] += this.velocityX;
+    }
     this.position[1] += this.velocityY;
 
     this.draw();
@@ -45,11 +47,7 @@ export class Player extends PhysicsObject {
 
   private handleInput(): void {
     if (KeyboardInput.isHeld('KeyD')) {
-      if (this.position[0] > SCROLL_POSITION * this.game.canvas.width) {
-        this.velocityX = 0;
-      } else {
-        if (this.velocityX < this.maxVelocityX) this.velocityX += .5;
-      }
+      if (this.velocityX < this.maxVelocityX) this.velocityX += .5;
     } else if (KeyboardInput.isHeld('KeyA')) {
       if (this.position[0] < 0) {
         this.velocityX = 0;
@@ -58,10 +56,13 @@ export class Player extends PhysicsObject {
       }
     } else {
       this.velocityX += -(this.velocityX / 10)
+      if (Math.abs(this.velocityX) < 0.25) {
+        this.velocityX = 0;
+      }
     }
 
     if (KeyboardInput.isHeld('space') && !this.jumpsPerformed) {
-      this.velocityY = -20;
+      this.velocityY = -15;
       this.jumpsPerformed++;
     }
 

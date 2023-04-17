@@ -26,9 +26,9 @@ export class Ground extends GameObject {
 
 
     if (this.game.player.position[0] > SCROLL_POSITION * this.game.canvas.width && KeyboardInput.isHeld('KeyD')) {
-      this.distanceSinceLastGeneration += this.game.player.maxVelocityX;
+      this.distanceSinceLastGeneration += Math.abs(this.game.player.velocityX);
       this.groundTiles.forEach((tile) => {
-        tile.position[0] -= this.game.player.maxVelocityX;
+        tile.position[0] -= this.game.player.velocityX;
       });
     }
 

@@ -1,3 +1,4 @@
+import { Obstacle } from "../entities/obstacles/Obstacle";
 import { Player } from "../entities/player/Player";
 import { Ground } from "../terrain/Ground";
 import { KeyboardInput } from "./KeyboardInput";
@@ -13,6 +14,8 @@ export class Game {
 
     return this._instance;
   }
+
+  private obstacles: Obstacle[] = [];
 
   public deltaTime: number = 0;
   public canvas!: HTMLCanvasElement;
@@ -34,12 +37,14 @@ export class Game {
 
     this.ground = new Ground();
     this.player = new Player();
+    this.obstacles.push(new Obstacle([this.canvas.width + 40, this.canvas.height - this.ground.height * 2]))
   }
 
   public update(): void {
     this.drawBackground();
     this.ground.update();
     this.player.update();
+    this.obstacles.forEach((obstacle) => obstacle.update());
 
     this.draw();
   }
@@ -52,13 +57,13 @@ export class Game {
     const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
 
     gradient.addColorStop(0, '#35D6ED');
-    gradient.addColorStop(0.1, '#35D6ED');
+    gradient.addColorStop(0.198, '#35D6ED');
     gradient.addColorStop(0.2, '#65DDEF');
-    gradient.addColorStop(0.3, '#65DDEF');
+    gradient.addColorStop(0.398, '#65DDEF');
     gradient.addColorStop(0.4, '#7AE5F5');
-    gradient.addColorStop(0.5, '#7AE5F5');
+    gradient.addColorStop(0.598, '#7AE5F5');
     gradient.addColorStop(0.6, '#97EBF4');
-    gradient.addColorStop(0.9, '#97EBF4');
+    gradient.addColorStop(0.7, '#97EBF4');
     gradient.addColorStop(1, '#C9F6FF');
 
     this.ctx.fillStyle = gradient;
