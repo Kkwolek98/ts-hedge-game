@@ -1,6 +1,8 @@
 import { Obstacle } from "../entities/obstacles/Obstacle";
+import { ObstaclesManager } from "../entities/obstacles/ObstaclesManager";
 import { Player } from "../entities/player/Player";
 import { Ground } from "../terrain/Ground";
+import { UI } from "../ui/UI";
 import { KeyboardInput } from "./KeyboardInput";
 import { SpriteManager } from "./SpriteManager";
 
@@ -15,13 +17,16 @@ export class Game {
     return this._instance;
   }
 
+  private ui!: UI;
 
+  public distanceWalked: number = 0;
   public deltaTime: number = 0;
   public canvas!: HTMLCanvasElement;
   public ctx!: CanvasRenderingContext2D;
   public player!: Player;
   public ground!: Ground;
-  public obstacles: Obstacle[] = [];
+  public obstacles!: Obstacle[];;
+  public obstaclesManager!: ObstaclesManager;
 
   constructor() {
     KeyboardInput.listen();
@@ -30,21 +35,27 @@ export class Game {
   public async start(): Promise<void> {
     if (!this.canvas) throw new Error('canvas undefined');
     this.canvas.width = 1920;
-    this.canvas.height = 1080;
+    this.canvas.height = 1000;
     this.ctx = this.canvas.getContext('2d')!;
 
     await this.loadSprites();
 
     this.ground = new Ground();
     this.player = new Player();
-    this.obstacles.push(new Obstacle([this.canvas.width + 40, this.canvas.height - this.ground.height * 2]))
+    this.ui = new UI();
+    this.obstacles = [];
+    this.distanceWalked = 0;
+    this.obstaclesManager = new ObstaclesManager();
+    this.obstaclesManager.addRule(.5, { probability: .5 });
   }
 
   public update(): void {
     this.drawBackground();
     this.ground.update();
     this.player.update();
+    this.obstaclesManager.setObstacles(this.obstacles);
     this.obstacles.forEach((obstacle) => obstacle.update());
+    this.ui.update();
 
     this.draw();
   }

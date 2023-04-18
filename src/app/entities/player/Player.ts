@@ -10,7 +10,6 @@ const SPRITE_NAME = 'hedgehog-sprite'
 export class Player extends PhysicsObject {
   private sprite: Sprite;
   private flipped: boolean = false;
-  private colliding: boolean = false;
 
   constructor() {
     const spriteData = SpriteManager.sprites.get(SPRITE_NAME)!;
@@ -30,6 +29,8 @@ export class Player extends PhysicsObject {
       this.position[0] += this.velocityX;
     }
     this.position[1] += this.velocityY;
+
+    this.game.distanceWalked += this.velocityX / 1000; // 1000px = 1m;
 
     this.draw();
   }
@@ -51,7 +52,7 @@ export class Player extends PhysicsObject {
 
   private handleInput(): void {
     if (KeyboardInput.isHeld('KeyD')) {
-      const collision = this.calculateCollision(this.velocityX + .5);
+      const collision = this.calculateCollision(this.velocityX);
       if (collision.isColliding) {
         this.position = collision.playerPositionLimit;
         this.velocityX = 0;
@@ -59,7 +60,7 @@ export class Player extends PhysicsObject {
         this.handleRightMovement();
       }
     } else if (KeyboardInput.isHeld('KeyA')) {
-      const collision = this.calculateCollision(this.velocityX - .5);
+      const collision = this.calculateCollision(this.velocityX);
       if (collision.isColliding) {
         this.position = collision.playerPositionLimit;
         this.velocityX = 0;
@@ -71,7 +72,7 @@ export class Player extends PhysicsObject {
     }
 
     if (KeyboardInput.isHeld('space') && !this.jumpsPerformed) {
-      this.velocityY = -25;
+      this.velocityY = -15;
       this.jumpsPerformed++;
     }
   }
@@ -135,6 +136,8 @@ export class Player extends PhysicsObject {
     }
 
     objectsNearby.forEach(checkCollision);
+
+    if (isColliding) this.game.start();
 
     return { isColliding: isColliding, playerPositionLimit }
   }

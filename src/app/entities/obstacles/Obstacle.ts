@@ -3,9 +3,6 @@ import { PhysicsObject } from "../../core/Physics";
 import { SCROLL_POSITION } from "../../core/settings";
 
 export class Obstacle extends PhysicsObject {
-
-  private distanceSinceLastGeneration: number = 0;
-
   constructor(position: number[]) {
     super(undefined, false);
 
@@ -14,7 +11,6 @@ export class Obstacle extends PhysicsObject {
 
   public update(): void {
     if (this.game.player.position[0] > SCROLL_POSITION * this.game.canvas.width && KeyboardInput.isHeld('KeyD')) {
-      this.distanceSinceLastGeneration += Math.abs(this.game.player.velocityX);
       this.position[0] -= this.game.player.velocityX;
     }
 

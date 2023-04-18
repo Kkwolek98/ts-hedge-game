@@ -3,10 +3,10 @@ import { Sprite } from "./Sprite";
 import { Velocity } from "./Velocity.interface";
 
 export class PhysicsObject extends GameObject implements Velocity {
-  public position: number[] = [100, 100]
+  public position: number[] = [100, 600]
   public velocityX: number = 0;
   public velocityY: number = 0;
-  public jumpsPerformed: number = 0;
+  public jumpsPerformed: number = 1;
   public maxVelocityX: number = 10;
 
   private readonly GRAVITY_ACCELERATION: number = .69;
