@@ -1,9 +1,10 @@
 import { KeyboardInput } from "../../core/KeyboardInput";
 import { PhysicsObject } from "../../core/Physics";
-import { SCROLL_POSITION } from "../../core/settings";
+import { GRAVITY, SCROLL_POSITION } from "../../core/utils/settings";
 import { Sprite } from "../../core/Sprite";
 import { SpriteManager } from "../../core/SpriteManager";
 import { Obstacle } from "../obstacles/Obstacle";
+import { jumpVelocityByHeight } from "../../core/utils/jumpUtils";
 
 const SPRITE_NAME = 'hedgehog-sprite'
 
@@ -52,17 +53,15 @@ export class Player extends PhysicsObject {
 
   private handleInput(): void {
     if (KeyboardInput.isHeld('KeyD')) {
-      const collision = this.calculateCollision(this.velocityX);
-      if (collision.isColliding) {
-        this.position = collision.playerPositionLimit;
+      const collision = this.calculateCollision(Math.min(this.maxVelocityX, this.velocityX + .5), this.velocityY - GRAVITY);
+      if (collision) {
         this.velocityX = 0;
       } else {
         this.handleRightMovement();
       }
     } else if (KeyboardInput.isHeld('KeyA')) {
-      const collision = this.calculateCollision(this.velocityX);
-      if (collision.isColliding) {
-        this.position = collision.playerPositionLimit;
+      const collision = this.calculateCollision(Math.max(-this.maxVelocityX, this.velocityX - .5), this.velocityY - GRAVITY);
+      if (collision) {
         this.velocityX = 0;
       } else {
         this.handleLeftMovement();
@@ -72,8 +71,10 @@ export class Player extends PhysicsObject {
     }
 
     if (KeyboardInput.isHeld('space') && !this.jumpsPerformed) {
-      this.velocityY = -15;
+      this.velocityY = jumpVelocityByHeight(192);
       this.jumpsPerformed++;
+    } else if (this.jumpsPerformed && this.velocityY < -1 && !KeyboardInput.isHeld('space')) {
+      this.velocityY = this.velocityY / 2;
     }
   }
 
@@ -83,13 +84,13 @@ export class Player extends PhysicsObject {
     if (this.position[0] < 0) {
       this.velocityX = 0;
     } else {
-      if (this.velocityX > -this.maxVelocityX) this.velocityX -= .5;
+      this.velocityX = Math.max(-this.maxVelocityX, this.velocityX - .5);
     }
   }
 
   private handleRightMovement(): void {
     this.flipped = false;
-    if (this.velocityX < this.maxVelocityX) this.velocityX += .5;
+    this.velocityX = Math.min(this.maxVelocityX, this.velocityX + .5);
   }
 
   private handleStop(): void {
@@ -102,44 +103,62 @@ export class Player extends PhysicsObject {
     }
   }
 
-  private calculateCollision(currentVelocity: number): { isColliding: boolean, playerPositionLimit: number[] } {
+  private calculateCollision(currentVelocityX: number, currentVelocityY: number): boolean {
     const checkNearby = (obstacle: Obstacle) => obstacle.position[0] < this.position[0] + 300 && obstacle.position[0] > this.position[0] - 300;
     const objectsNearby: Obstacle[] = this.game.obstacles.filter(checkNearby);
 
-    let playerPositionLimit = [0, 0];
     let isColliding = false;
 
-    const checkCollision = (obstacle: Obstacle) => {
-      const playerBottomY = this.position[1] + this.sprite.dimensions.h;
-      const obstacleTopY = obstacle.position[1];
+    const playerHitbox = {
+      x: this.position[0],
+      y: this.position[1],
+      width: this.sprite.dimensions.w,
+      height: this.sprite.dimensions.h
+    };
 
-      if (playerBottomY < obstacleTopY) return;
+    const velocitySteps = 5; // number of steps to check for collision
+    const velocityStepX = currentVelocityX / velocitySteps;
+    const velocityStepY = currentVelocityY / velocitySteps;
 
-      const playersRightSideX = this.position[0] + this.sprite.dimensions.w;
-      const playersLeftSideX = this.position[0];
-      const obstacleRightSideX = obstacle.position[0] + 96;
-      const obstacleLeftSideX = obstacle.position[0];
+    for (let i = 0; i < velocitySteps; i++) {
+      playerHitbox.x += velocityStepX;
+      playerHitbox.y += velocityStepY;
 
-      const rightSideColliding = playersRightSideX + currentVelocity >= obstacleLeftSideX && playersRightSideX + currentVelocity < obstacleRightSideX;
-      const leftSideColliding = playersLeftSideX + currentVelocity <= obstacleRightSideX && playersLeftSideX + currentVelocity > obstacleLeftSideX;
+      let obstacleHitbox: { x: any; width: any; y: any; height: any; };
 
-      const isCollidingLeft = currentVelocity < 0 && leftSideColliding;
-      const isCollidingRight = currentVelocity > 0 && rightSideColliding;
+      const checkCollision = (obstacle: Obstacle) => {
+        // Determine the coordinates of the obstacle's hitbox
+        obstacleHitbox = {
+          x: obstacle.position[0] - (this.game.isScrolling() ? velocityStepX * i : 0),
+          y: obstacle.position[1],
+          width: 96,
+          height: 96
+        };
 
-      if (isCollidingRight) {
-        playerPositionLimit = [obstacleLeftSideX - currentVelocity - this.sprite.dimensions.w, this.position[1]];
-      } else if (isCollidingLeft) {
-        playerPositionLimit = [obstacleRightSideX + currentVelocity, this.position[1]];
+
+        // Check for collision between the player's hitbox at the current position and the obstacle's hitbox
+        const collides = !(
+          playerHitbox.x + playerHitbox.width < obstacleHitbox.x ||
+          playerHitbox.x > obstacleHitbox.x + obstacleHitbox.width ||
+          playerHitbox.y + playerHitbox.height < obstacleHitbox.y ||
+          playerHitbox.y > obstacleHitbox.y + obstacleHitbox.height
+        );
+
+        if (collides) console.log(this.game.isScrolling(currentVelocityX))
+        isColliding = isColliding || collides;
       }
 
-      isColliding = isCollidingLeft || isCollidingRight;
-    }
+      objectsNearby.forEach(checkCollision);
 
-    objectsNearby.forEach(checkCollision);
+      if (isColliding) {
+        this.position[0] = obstacleHitbox!.x - obstacleHitbox!.width;
+        break
+      }; // no need to check further if collision occurred
+    }
 
     if (isColliding) this.game.start();
 
-    return { isColliding: isColliding, playerPositionLimit }
+    return isColliding;
   }
 
 }

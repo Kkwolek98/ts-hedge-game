@@ -5,6 +5,7 @@ import { Ground } from "../terrain/Ground";
 import { UI } from "../ui/UI";
 import { KeyboardInput } from "./KeyboardInput";
 import { SpriteManager } from "./SpriteManager";
+import { SCROLL_POSITION } from "./utils/settings";
 
 export class Game {
   //singleton
@@ -51,13 +52,17 @@ export class Game {
 
   public update(): void {
     this.drawBackground();
-    this.ground.update();
-    this.player.update();
-    this.obstaclesManager.setObstacles(this.obstacles);
     this.obstacles.forEach((obstacle) => obstacle.update());
+    this.player.update();
+    this.ground.update();
+    this.obstaclesManager.setObstacles(this.obstacles);
     this.ui.update();
 
     this.draw();
+  }
+
+  public isScrolling(velocity: number = 0): boolean {
+    return this.player.position[0] + velocity > SCROLL_POSITION * this.canvas.width && KeyboardInput.isHeld('KeyD');
   }
 
   private draw(): void {

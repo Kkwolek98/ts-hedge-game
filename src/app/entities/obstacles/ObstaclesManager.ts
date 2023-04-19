@@ -24,7 +24,6 @@ export class ObstaclesManager {
     const distanceWalked = this.game.distanceWalked;
 
     this.generatorRules.forEach((rules, distance) => {
-      console.log(distanceWalked % 1)
       if (distanceWalked > 0 && distanceWalked % distance <= .25) {
         rules.filter(({ firedAt }) => distanceWalked - (firedAt || 0) > .25).forEach((rule) => {
           const rand = Math.random();

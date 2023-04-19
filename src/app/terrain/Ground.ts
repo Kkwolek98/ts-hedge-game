@@ -1,6 +1,6 @@
 import { GameObject } from "../core/GameObject";
 import { KeyboardInput } from "../core/KeyboardInput";
-import { SCROLL_POSITION } from "../core/settings";
+import { SCROLL_POSITION } from "../core/utils/settings";
 import { SpriteManager } from "../core/SpriteManager";
 import { GroundTile } from "./GroundTile";
 
@@ -25,7 +25,7 @@ export class Ground extends GameObject {
     }
 
 
-    if (this.game.player.position[0] > SCROLL_POSITION * this.game.canvas.width && KeyboardInput.isHeld('KeyD')) {
+    if (this.game.isScrolling()) {
       this.distanceSinceLastGeneration += Math.abs(this.game.player.velocityX);
       this.groundTiles.forEach((tile) => {
         tile.position[0] -= this.game.player.velocityX;

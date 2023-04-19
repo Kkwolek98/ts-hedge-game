@@ -1,6 +1,4 @@
-import { KeyboardInput } from "../../core/KeyboardInput";
 import { PhysicsObject } from "../../core/Physics";
-import { SCROLL_POSITION } from "../../core/settings";
 
 export class Obstacle extends PhysicsObject {
   constructor(position: number[]) {
@@ -10,9 +8,13 @@ export class Obstacle extends PhysicsObject {
   }
 
   public update(): void {
-    if (this.game.player.position[0] > SCROLL_POSITION * this.game.canvas.width && KeyboardInput.isHeld('KeyD')) {
-      this.position[0] -= this.game.player.velocityX;
+    if (this.game.isScrolling()) {
+      this.velocityX = this.game.player.velocityX;
+    } else {
+      this.velocityX = 0;
     }
+
+    this.position[0] -= this.velocityX
 
     this.draw();
   }
